@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from "react";
+import ProductList from "./ProductList"; // Import the ProductList component
 
 const CrudApp = () => {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({ id: null, name: "", price: "", description: "" });
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState(""); // State for error messages
+  const [error, setError] = useState("");
 
-//   // Load products from local storage on component mount
-//   useEffect(() => {
-//     const storedProducts = JSON.parse(localStorage.getItem("products")) || [];
-//     setProducts(storedProducts);
-//   }, []);
+  useEffect(() => {
+    const storedProducts = JSON.parse(localStorage.getItem("products")) || [];
+    setProducts(storedProducts);
+  }, []);
 
-//   // Save products to local storage whenever they change
-//   useEffect(() => {
-//     localStorage.setItem("products", JSON.stringify(products));
-//   }, [products]);
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(products));
+  }, [products]);
 
   const handleInputChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,7 +27,7 @@ const CrudApp = () => {
     }
     setProducts([...products, { ...form, id: Date.now() }]);
     setForm({ id: null, name: "", price: "", description: "" });
-    setError(""); // Clear error message on success
+    setError("");
   };
 
   const handleUpdate = () => {
@@ -39,7 +38,7 @@ const CrudApp = () => {
     setProducts(products.map((p) => (p.id === form.id ? form : p)));
     setForm({ id: null, name: "", price: "", description: "" });
     setIsEditing(false);
-    setError(""); // Clear error message on success
+    setError("");
   };
 
   const handleDelete = (id) => {
@@ -51,12 +50,8 @@ const CrudApp = () => {
     setIsEditing(true);
   };
 
-  const closeErrorBox = () => {
-    setError("");
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 p-4 relative">
+    <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
         <h1 className="text-2xl font-bold mb-4">Product CRUD System</h1>
         
@@ -68,7 +63,7 @@ const CrudApp = () => {
             placeholder="Product Name"
             value={form.name}
             onChange={handleInputChange}
-            className="block w-full px-4 py-2 mb-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-2 mb-2 border rounded-md"
           />
           <input
             type="text"
@@ -76,14 +71,14 @@ const CrudApp = () => {
             placeholder="Price"
             value={form.price}
             onChange={handleInputChange}
-            className="block w-full px-4 py-2 mb-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-2 mb-2 border rounded-md"
           />
           <textarea
             name="description"
             placeholder="Description"
             value={form.description}
             onChange={handleInputChange}
-            className="block w-full px-4 py-2 mb-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-4 py-2 mb-2 border rounded-md"
           />
           <button
             onClick={isEditing ? handleUpdate : handleAdd}
@@ -95,57 +90,13 @@ const CrudApp = () => {
           </button>
         </div>
 
-        {/* Product List */}
-        <table className="w-full table-auto border-collapse border border-gray-200">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border px-4 py-2">Name</th>
-              <th className="border px-4 py-2">Price</th>
-              <th className="border px-4 py-2">Description</th>
-              <th className="border px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td className="border px-4 py-2">{product.name}</td>
-                <td className="border px-4 py-2">{product.price}</td>
-                <td className="border px-4 py-2">{product.description}</td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(product)}
-                    className="px-3 py-1 mr-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(product.id)}
-                    className="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Pass products and action handlers to ProductList */}
+        <ProductList
+          products={products}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
-
-      {/* Error Box */}
-      {error && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm text-center">
-            <h2 className="text-lg font-bold text-red-600 mb-4">Error</h2>
-            <p className="text-gray-800">{error}</p>
-            <button
-              onClick={closeErrorBox}
-              className="mt-4 px-4 py-2 bg-red-500 text-white font-bold rounded-md hover:bg-red-600"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
