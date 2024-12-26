@@ -1,101 +1,123 @@
-import React, { useState, useEffect } from "react";
-import ProductList from "./ProductList"; // Import the ProductList component
+import React, { useState } from "react";
 
 const CrudApp = () => {
-  const [products, setProducts] = useState([]);
-  const [form, setForm] = useState({ id: null, name: "", price: "", description: "" });
-  const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const storedProducts = JSON.parse(localStorage.getItem("products")) || [];
-    setProducts(storedProducts);
-  }, []);
+  const [products, setProducts] = useState([]); // State for the product list
+  const [name, setName] = useState(""); // State for the product name input
+  const [price, setPrice] = useState(""); // State for the price input
+  const [description, setDescription] = useState(""); // State for the description input
 
-  useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
-  }, [products]);
+  const handleAddProduct = () => {
+    // if (!name || !price || !description) {
+    //   setError(true);
+    //   return;
+    // }
+    // setError(false);
 
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const newProduct = {
+      // id: Date.now(),
+      name,
+      price,
+      description,
+    };
+
+    setProducts([...products, newProduct]); // Add new product to the list
+    setName(""); // Clear input fields
+    setPrice("");
+    setDescription("");
   };
+  const HandleDeleteProduct= (index) =>{
+const CopyOfPorducts =[...products]
+CopyOfPorducts.splice(index, 1);
+setProducts(CopyOfPorducts);
 
-  const handleAdd = () => {
-    if (!form.name || !form.price || !form.description) {
-      setError("All fields (Name, Price, Description) are required!");
-      return;
-    }
-    setProducts([...products, { ...form, id: Date.now() }]);
-    setForm({ id: null, name: "", price: "", description: "" });
-    setError("");
-  };
-
-  const handleUpdate = () => {
-    if (!form.name || !form.price || !form.description) {
-      setError("All fields (Name, Price, Description) are required!");
-      return;
-    }
-    setProducts(products.map((p) => (p.id === form.id ? form : p)));
-    setForm({ id: null, name: "", price: "", description: "" });
-    setIsEditing(false);
-    setError("");
-  };
-
-  const handleDelete = (id) => {
-    setProducts(products.filter((p) => p.id !== id));
-  };
-
-  const handleEdit = (product) => {
-    setForm(product);
-    setIsEditing(true);
-  };
-
+  }
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
-        <h1 className="text-2xl font-bold mb-4">Product CRUD System</h1>
-        
-        {/* Form */}
-        <div className="mb-6">
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <h1 className="text-2xl font-bold mb-6 text-center">Product CRUD System</h1>
+
+        {/* Error Box */}
+        {/* {error && (
+          <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong className="font-bold">Error: </strong>
+            <span className="block sm:inline">All fields are required!</span>
+          </div>
+        )} */}
+
+        {/* Form Section */}
+        <div className="mb-8">
           <input
             type="text"
-            name="name"
             placeholder="Product Name"
-            value={form.name}
-            onChange={handleInputChange}
-            className="block w-full px-4 py-2 mb-2 border rounded-md"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="block w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="text"
-            name="price"
             placeholder="Price"
-            value={form.price}
-            onChange={handleInputChange}
-            className="block w-full px-4 py-2 mb-2 border rounded-md"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="block w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <textarea
-            name="description"
             placeholder="Description"
-            value={form.description}
-            onChange={handleInputChange}
-            className="block w-full px-4 py-2 mb-2 border rounded-md"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="block w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
-            onClick={isEditing ? handleUpdate : handleAdd}
-            className={`w-full px-4 py-2 text-white font-bold rounded-md ${
-              isEditing ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-500 hover:bg-blue-600"
-            }`}
+          onClick={handleAddProduct}
+            className="w-full px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600"
           >
-            {isEditing ? "Update Product" : "Add Product"}
+            Add Product
           </button>
         </div>
 
-        {/* Pass products and action handlers to ProductList */}
-        <ProductList
-          products={products}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        {/* Product List */}
+        <div>
+          <h2 className="text-xl font-bold mb-4">Product List</h2>
+          <table className="w-full table-auto border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-4 py-2">Name</th>
+                <th className="border px-4 py-2">Price</th>
+                <th className="border px-4 py-2">Description</th>
+                <th className="border px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+        {products.map((product)=>(
+           <tr key={product.id}> 
+           <td className="border px-4 py-2">{product.name}</td>
+           <td className="border px-4 py-2">{product.price}</td>
+           <td className="border px-4 py-2">{product.description}</td>
+           <td className="border px-4 py-2">
+             <button
+               className="px-3 py-1 mr-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
+             >
+               Edit
+             </button>
+             <button
+             onClick={()=>HandleDeleteProduct(product.id)}
+               className="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600"
+             >
+               Delete
+             </button>
+           </td>
+         </tr>
+        )
+               
+       
+          
+        )
+
+        }
+              {/* Additional rows can be added dynamically */}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
