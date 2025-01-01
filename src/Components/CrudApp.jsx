@@ -33,7 +33,7 @@ setProducts(CopyOfPorducts);
 
   }
   return (
-    <div className="min-h-screen bg-gray-400 p-4">
+    <div className="min-h-screen bg-gray-500 p-4">
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
         <h1 className="text-2xl font-bold mb-6 text-center">Product CRUD System</h1>
 
